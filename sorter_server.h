@@ -9,6 +9,18 @@
 #include <unistd.h>
 #include <dirent.h>
 #include<pthread.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/un.h>
+#include <sys/ioctl.h>
+#include <sys/wait.h>
+#include <sys/select.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <signal.h>
+
 
 
 void* thread_dir_func(void *);
@@ -18,6 +30,7 @@ int find_csv_files(char*);
 int check_csv_format(char*, char[]);
 void dir_name(char* ,char *, char[], int);
 int sort_file(char[],char[]);
+void get_client_contents(int,char[]);
 
 
 /**File Where all the forking information will written to**/
@@ -36,6 +49,15 @@ FILE* num_file ;
 /**file object for heiarchy**/
 FILE* extra_2;
 
+
+
+/**Structure to represent each socket**/
+struct socket{
+
+	int client_socket;
+	int my_num;
+
+};
 
 
 /** Structure For Each Row **/
@@ -100,10 +122,17 @@ struct names{
 
 /**Global Variable**/
 
+struct sockaddr_in clients_addr[5000];
+int clients_sock[5000];
+socklen_t clilens[5000];
+int client_index = 0;
+int ID = 0;
+
+
 
 /**locks**/
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-//pthread_mutex_t merge_lock = PTHREAD_MUTEX_INITIALIZER;
+//pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t merge_lock = PTHREAD_MUTEX_INITIALIZER;
 
 
 
@@ -118,10 +147,11 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 
 /****ArrayList for Threads and Struts*****/
-//pthread_t * ts;//threads
+pthread_t * ts;//threads
+struct socket * sockets; //sockets
 //struct names * sts; //structs
-//int ts_index=0;
-//int ts_limit = 5000;
+int ts_index=0;
+int ts_limit = 5000;
 
 
 

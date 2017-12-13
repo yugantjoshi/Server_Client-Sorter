@@ -9,6 +9,19 @@
 #include <unistd.h>
 #include <dirent.h>
 #include<pthread.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/un.h>
+#include <sys/ioctl.h>
+#include <sys/wait.h>
+#include <sys/select.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <signal.h>
+
+
 
 
 void* thread_dir_func(void *);
@@ -21,20 +34,18 @@ int sort_file(char[],char[]);
 
 
 /**File Where all the forking information will written to**/
-FILE * fork_output;
+//FILE * fork_output;
 
 /**output DIR Name**/
-char output_dir_name[1048];
 
-/**global variable to sort**/
-char temp_sort[50];
+
 
 
 /**file object where you will be putting the numbers of process**/
-FILE* num_file ;
+//FILE* num_file ;
 
 /**file object for heiarchy**/
-FILE* extra_2;
+//FILE* extra_2;
 
 
 
@@ -98,8 +109,25 @@ struct names{
 
 
 
+
+
+
+
 /**Global Variable**/
 
+
+
+int sockfd , clientfd, n, portno;
+struct hostent* server;
+char temp_sort[50];
+char header[500];
+char * host;
+char initial_dir_name[1048];
+char output_dir_name[1048];
+
+
+struct sockaddr_in serv_add , client_add;
+socklen_t clilen;
 
 /**locks**/
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
